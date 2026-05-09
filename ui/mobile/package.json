@@ -18,7 +18,7 @@
     "@types/three": "^0.183.1",
     "axios": "^1.13.6",
     "expo": "~55.0.4",
-    "expo-status-bar": "~55.0.4",
+    "expo-status-bar": "~55.0.6",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-native": "0.83.2",
