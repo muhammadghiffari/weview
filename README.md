@@ -18,7 +18,7 @@
 
 ## Abstract
 
-**WeView (formerly WiFi-DensePose)** is a multi-modal sensing platform that utilizes Channel State Information (CSI) from commodity WiFi hardware (ESP32-S3) to perform human pose estimation, vital sign monitoring, and disaster recovery sensing. The project has evolved from a Python-based research prototype (v1) into a high-performance, domain-driven Rust ecosystem (v2) capable of real-time inference and distributed swarm coordination.
+**WeView** is a multi-modal sensing platform developed to utilize Channel State Information (CSI) from commodity WiFi hardware (ESP32-S3) to perform human pose estimation, vital sign monitoring, and disaster recovery sensing. Built from the ground up, the project features a high-performance, domain-driven Rust ecosystem capable of real-time inference and distributed swarm coordination.
 
 The primary goal of WeView is to "see" through obstacles and in low-light conditions by analyzing how human bodies disturb WiFi signals, mapping these disturbances to the DensePose coordinate system (mapping image pixels to 3D surface coordinates of the human body).
 
@@ -30,17 +30,6 @@ The codebase is organized into four primary pillars:
 2. **Core Processing (Rust v2):** A workspace of 15+ crates handling signal processing, neural network inference (ONNX/Candle), and spatial-temporal analysis.
 3. **Agentic Orchestration (Claude Flow V3):** A self-learning multi-agent swarm that manages code evolution, system optimization, and consensus-driven decision making.
 4. **Visualization & UX:** A Tauri-based desktop application, a Three.js-powered pointcloud viewer, and a Glassmorphism web UI for real-time 3D rendering of pose data.
-
-### Version History: v1 (Python) → v2 (Rust)
-The system underwent a major architectural shift to improve latency, type safety, and deployment flexibility.
-
-| Feature | v1 Python (Archive) | v2 Rust (Core) |
-| --- | --- | --- |
-| **Core Logic** | FastAPI / PyTorch | Axum / Candle (ONNX) |
-| **Processing** | NumPy / SciPy | `wifi-densepose-signal` (SIMD optimized) |
-| **Concurrency** | Asyncio / Multiprocessing | Tokio / Rayon |
-| **Edge Logic** | Limited | WASM Edge Intelligence Modules |
-| **Orchestration** | Manual | Claude Flow V3 Swarm |
 
 ## Intelligence & Orchestration: Claude Flow V3
 
@@ -89,7 +78,7 @@ The frontend operates in decoupled layers to interact with the Rust backend:
 Before starting the build process, ensure the following toolchains are installed:
 - **Rust:** `1.75+ (Stable)` (Core workspace and sensing server)
 - **Docker:** `24.0+` (Containerized pipelines and monitoring)
-- **Python:** `3.10+` (v1 Archive and ML training scripts)
+- **Python:** `3.10+` (ML training scripts and simulation servers)
 - **ESP-IDF:** `v5.1+` (ESP32-S3 firmware compilation)
 - **QEMU:** `System-xtensa` (Firmware testing without hardware)
 
@@ -98,9 +87,9 @@ The fastest way to deploy the sensing infrastructure is via the provided Docker 
 ```bash
 docker-compose up --build
 ```
-*This launches the Rust sensing server, the legacy Python pipeline, and the Prometheus/Grafana monitoring stack.*
+*This launches the Rust sensing server, simulation pipelines, and the Prometheus/Grafana monitoring stack.*
 
-### 2. Rust Workspace Build (v2)
+### 2. Rust Workspace Build
 ```bash
 cargo fetch
 cargo build --release
