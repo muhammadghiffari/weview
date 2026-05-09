@@ -57,7 +57,7 @@ For academic and engineering evaluation, WeView introduces several key implement
 ```text
 WeView/
 ├── firmware/              # ESP32-S3 firmware for raw CSI extraction
-├── backend/               # Rust-based signal processing & WebSocket server
+├── v2/                    # Rust-based signal processing & WebSocket server (Rust Sensing)
 ├── ui/                    # Core visualization platform (Frontend)
 │   ├── assets/            # UI assets and logos
 │   ├── js/                # Pose fusion logic and MediaPipe configuration
@@ -68,19 +68,51 @@ WeView/
 └── README.md              # Technical documentation
 ```
 
-## System Requirements & Setup
+## Prerequisites
 
-To reproduce the visualization frontend locally:
+To compile and run the entire spatial intelligence platform, the following dependencies must be installed:
 
-1. **Environment:** Any modern web browser supporting WebAssembly and WebGL 2.0 (Chrome 90+, Firefox 88+).
-2. **Local Server:** The frontend requires a local HTTP server to bypass CORS restrictions for WASM module loading.
-   ```bash
-   cd ui
-   python3 -m http.server 3000
-   ```
-3. **Execution:** Navigate to `http://localhost:3000`.
+* **Rust Toolchain:** `rustc 1.70+` and `cargo` (for building the signal processing backend).
+* **Python:** `Python 3.8+` (for serving the frontend and evaluating simulation models).
+* **Node.js / npm:** (Optional, for building the NVSim Vite dashboard).
+* **Browser:** A modern browser with WebGL 2.0 and WebAssembly support (Chrome/Edge 90+, Firefox 88+).
+* **Hardware:** ESP32-S3 development boards (Only required for live physical CSI capture. The frontend can run in simulation/webcam-only mode without it).
 
-*(Note: Live CSI fusion capabilities require the physical ESP32-S3 mesh network to be active and the Rust backend to be broadcasting on `ws://localhost:8765`).*
+## Running the Platform
+
+The platform operates in decoupled layers. For full functionality, both the Rust Sensing engine and the UI frontend must be running simultaneously.
+
+### 1. Start the Rust Sensing Engine (v2)
+
+The Rust engine handles the ingestion of raw CSI packets from the ESP32 mesh, computes spatial tensors, and broadcasts them via WebSockets.
+
+```bash
+# Navigate to the Rust sensing directory
+cd v2/
+
+# Compile and run the Rust server in release mode for maximum performance
+cargo run --release
+```
+*The server will typically bind to `ws://localhost:8765`.*
+
+### 2. Start the Frontend (UI Visualization & Optical Inference)
+
+The frontend uses MediaPipe WASM and WebGL. Due to browser security policies regarding WebAssembly and local files, it must be served via a local HTTP server.
+
+```bash
+# Open a new terminal window/tab
+cd ui/
+
+# Start a local HTTP server
+python3 -m http.server 3000
+```
+
+### 3. Access the Dashboards
+
+Navigate to the following URLs in your browser to interact with the modules:
+- **Main Landing Page:** `http://localhost:3000`
+- **Observatory 3D:** `http://localhost:3000/observatory-3d.html`
+- **Pose Fusion:** `http://localhost:3000/pose-fusion.html`
 
 ## License & Attribution
 
