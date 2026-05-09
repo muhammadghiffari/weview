@@ -3687,6 +3687,7 @@ dependencies = [
  "portable-atomic",
  "portable-atomic-util",
  "rawpointer",
+ "serde",
 ]
 
 [[package]]
@@ -5774,9 +5775,9 @@ dependencies = [
 
 [[package]]
 name = "ruvector-core"
-version = "2.0.5"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc7bc95e3682430c27228d7bc694ba9640cd322dde1bd5e7c9cf96a16afb4ca1"
+checksum = "83fe578d02c93613b26d40105c9663df5e86414195e91db0ea7470d3b9c64843"
 dependencies = [
  "anyhow",
  "bincode 2.0.1",
@@ -5818,14 +5819,14 @@ dependencies = [
 
 [[package]]
 name = "ruvector-gnn"
-version = "2.0.5"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e17c1cf1ff3380026b299ff3c1ba3a5685c3d8d54700e6ab0b585b6cec21d7b"
+checksum = "a251f9ced8d3231395d922369edc803ef0fc513c7776128f7b4ef21f20dd1f4b"
 dependencies = [
  "anyhow",
  "dashmap",
  "libc",
- "ndarray 0.16.1",
+ "ndarray 0.17.2",
  "parking_lot",
  "rand 0.8.5",
  "rand_distr 0.4.3",
