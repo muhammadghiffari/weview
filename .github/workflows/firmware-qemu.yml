@@ -102,7 +102,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download QEMU artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: qemu-esp32
           path: /opt/qemu-esp32
@@ -319,7 +319,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download QEMU artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: qemu-esp32
           path: /opt/qemu-esp32
