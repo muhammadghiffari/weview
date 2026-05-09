@@ -1,0 +1,49 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "QEMU ESP32-S3 Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/firmware/esp32-csi-node/build/esp32-csi-node.elf",
+            "cwd": "${workspaceFolder}/firmware/esp32-csi-node",
+            "MIMode": "gdb",
+            "miDebuggerPath": "xtensa-esp-elf-gdb",
+            "miDebuggerServerAddress": "localhost:1234",
+            "setupCommands": [
+                {
+                    "description": "Set remote hardware breakpoint limit (ESP32-S3 has 2)",
+                    "text": "set remote hardware-breakpoint-limit 2",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "Set remote hardware watchpoint limit (ESP32-S3 has 2)",
+                    "text": "set remote hardware-watchpoint-limit 2",
+                    "ignoreFailures": false
+                }
+            ]
+        },
+        {
+            "name": "QEMU ESP32-S3 Debug (attach)",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": "${workspaceFolder}/firmware/esp32-csi-node/build/esp32-csi-node.elf",
+            "cwd": "${workspaceFolder}/firmware/esp32-csi-node",
+            "MIMode": "gdb",
+            "miDebuggerPath": "xtensa-esp-elf-gdb",
+            "miDebuggerServerAddress": "localhost:1234",
+            "setupCommands": [
+                {
+                    "description": "Set remote hardware breakpoint limit (ESP32-S3 has 2)",
+                    "text": "set remote hardware-breakpoint-limit 2",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "Set remote hardware watchpoint limit (ESP32-S3 has 2)",
+                    "text": "set remote hardware-watchpoint-limit 2",
+                    "ignoreFailures": false
+                }
+            ]
+        }
+    ]
+}

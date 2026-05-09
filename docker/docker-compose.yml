@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  sensing-server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.rust
+    image: ruvnet/wifi-densepose:latest
+    ports:
+      - "3000:3000"   # REST API
+      - "3001:3001"   # WebSocket
+      - "5005:5005/udp"  # ESP32 UDP
+    environment:
+      - RUST_LOG=info
+      # CSI_SOURCE controls the data source for the sensing server.
+      # Options: auto (default) — probe for ESP32 UDP then fall back to simulation
+      #          esp32          — receive real CSI frames from an ESP32 on UDP port 5005
+      #          wifi           — use host Wi-Fi RSSI/scan data (Windows netsh)
+      #          simulated      — generate synthetic CSI data (no hardware required)
+      - CSI_SOURCE=${CSI_SOURCE:-auto}
+      # MODELS_DIR controls where the server scans for .rvf model files.
+      # Mount a host directory and set this to make models visible:
+      #   volumes: ["/path/to/models:/app/models"]
+      #   MODELS_DIR=/app/models
+      - MODELS_DIR=${MODELS_DIR:-data/models}
+    # No explicit command needed — docker-entrypoint.sh uses CSI_SOURCE.
+    # Override with: command: ["--source", "esp32", "--tick-ms", "500"]
+
+  python-sensing:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.python
+    image: ruvnet/wifi-densepose:python
+    ports:
+      - "8765:8765"   # WebSocket
+      - "8080:8080"   # UI
+    environment:
+      - PYTHONUNBUFFERED=1

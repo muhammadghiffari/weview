@@ -1,0 +1,24 @@
+# Quick CI smoke test: 2 nodes, star topology, 15s duration
+swarm:
+  name: smoke
+  duration_s: 15
+  topology: star
+  aggregator_port: 5005
+
+nodes:
+  - role: coordinator
+    node_id: 0
+    scenario: 0
+    channel: 6
+    edge_tier: 1
+
+  - role: sensor
+    node_id: 1
+    scenario: 1
+    channel: 6
+    tdm_slot: 1
+
+assertions:
+  - all_nodes_boot
+  - no_crashes
+  - max_boot_time_s: 10

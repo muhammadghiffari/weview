@@ -1,0 +1,64 @@
+# WiFi-DensePose Rust Sensing Server
+# Includes RuVector signal intelligence crates
+# Multi-stage build for minimal final image
+
+# Stage 1: Build
+FROM rust:1.85-bookworm AS builder
+
+WORKDIR /build
+
+# Copy workspace files
+COPY v2/Cargo.toml v2/Cargo.lock ./
+COPY v2/crates/ ./crates/
+
+# Copy vendored RuVector crates
+COPY vendor/ruvector/ /build/vendor/ruvector/
+
+# Build release binary
+RUN cargo build --release -p wifi-densepose-sensing-server 2>&1 \
+    && strip target/release/sensing-server
+
+# Stage 2: Runtime
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy binary
+COPY --from=builder /build/target/release/sensing-server /app/sensing-server
+
+# Copy UI assets
+COPY ui/ /app/ui/
+
+# HTTP API
+EXPOSE 3000
+# WebSocket
+EXPOSE 3001
+# ESP32 UDP
+EXPOSE 5005/udp
+
+ENV RUST_LOG=info
+
+# CSI_SOURCE controls which data source the sensing server uses at startup.
+# auto      — probe UDP port 5005 for an ESP32 first; fall back to simulation (default)
+# esp32     — receive real CSI frames from an ESP32 device over UDP port 5005
+# wifi      — use host Wi-Fi RSSI/scan data (Windows netsh; not available in containers)
+# simulated — generate synthetic CSI frames (no hardware required)
+# Override at runtime:  docker run -e CSI_SOURCE=esp32 ...
+ENV CSI_SOURCE=auto
+
+# MODELS_DIR controls where the server scans for .rvf model files.
+# Mount a host directory here to make models visible to the API:
+#   docker run -v /path/to/models:/app/models -e MODELS_DIR=/app/models ...
+ENV MODELS_DIR=data/models
+
+COPY docker/docker-entrypoint.sh /app/docker-entrypoint.sh
+
+# Exec-form ENTRYPOINT so Docker appends user arguments correctly.
+# Pass flags directly:  docker run <image> --source esp32 --tick-ms 500
+# Or use env vars:      docker run -e CSI_SOURCE=esp32 <image>
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD []

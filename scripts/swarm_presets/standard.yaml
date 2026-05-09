@@ -1,0 +1,36 @@
+# Standard 3-node test: 2 sensors + 1 coordinator, star topology, 60s
+swarm:
+  name: standard
+  duration_s: 60
+  topology: star
+  aggregator_port: 5005
+
+nodes:
+  - role: coordinator
+    node_id: 0
+    scenario: 0
+    channel: 6
+    edge_tier: 2
+    is_gateway: true
+
+  - role: sensor
+    node_id: 1
+    scenario: 2
+    channel: 6
+    tdm_slot: 1
+
+  - role: sensor
+    node_id: 2
+    scenario: 3
+    channel: 6
+    tdm_slot: 2
+
+assertions:
+  - all_nodes_boot
+  - no_crashes
+  - tdm_no_collision
+  - all_nodes_produce_frames
+  - coordinator_receives_from_all
+  - fall_detected_by_node_2
+  - frame_rate_above: 15
+  - max_boot_time_s: 10
