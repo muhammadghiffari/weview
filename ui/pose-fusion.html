@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeView — Dual-Modal Pose Estimation</title>
+  <link rel="stylesheet" href="pose-fusion/css/style.css?v=13">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <img src="assets/WeView_Logo.png" alt="Pi" style="height: 24px; margin-right: 8px; vertical-align: middle;" onerror="this.style.display='none';">
+        WeView
+      </div>
+      <div class="header-title">Dual-Modal Pose Estimation — Live Video + WiFi CSI Fusion</div>
+    </div>
+    <div class="header-right">
+      <select id="mode-select" class="mode-select">
+        <option value="dual">Dual Mode (Video + CSI)</option>
+        <option value="video">Video Only</option>
+        <option value="csi">CSI Only (WiFi)</option>
+      </select>
+      <div class="status-badge">
+        <span id="status-dot" class="status-dot offline"></span>
+        <span id="status-label">READY</span>
+      </div>
+      <span id="fps-display" class="fps-badge">-- FPS</span>
+      <a href="index.html" class="back-link">&larr; Dashboard</a>
+      <a href="observatory.html" class="back-link">Observatory &rarr;</a>
+    </div>
+  </header>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+
+    <!-- Video + Skeleton Panel -->
+    <div class="video-panel">
+      <video id="webcam" autoplay playsinline muted></video>
+      <canvas id="skeleton-canvas"></canvas>
+      <div class="video-overlay-label" id="mode-label">DUAL FUSION</div>
+
+      <div id="camera-prompt" class="camera-prompt">
+        <div class="camera-prompt-label" id="prompt-mode-label">DUAL FUSION</div>
+        <p>Enable your webcam for live video pose estimation.<br>
+           Or switch to <strong>CSI Only</strong> mode for WiFi-based sensing.</p>
+        <button id="start-camera-btn">Enable Camera</button>
+      </div>
+    </div>
+
+    <!-- Side Panels -->
+    <div class="side-panels">
+
+      <!-- Fusion Confidence -->
+      <div class="panel">
+        <div class="panel-title">&#9670; Fusion Confidence</div>
+        <div class="fusion-bars">
+          <div class="bar-row">
+            <span class="bar-label">Video</span>
+            <div class="bar-track"><div class="bar-fill video" id="video-bar" style="width:0%"></div></div>
+            <span class="bar-value" id="video-bar-val">0%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">CSI</span>
+            <div class="bar-track"><div class="bar-fill csi" id="csi-bar" style="width:0%"></div></div>
+            <span class="bar-value" id="csi-bar-val">0%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Fused</span>
+            <div class="bar-track"><div class="bar-fill fused" id="fused-bar" style="width:0%"></div></div>
+            <span class="bar-value" id="fused-bar-val">0%</span>
+          </div>
+        </div>
+        <div style="margin-top:8px; font-size:10px; color:var(--text-label)">
+          Cross-modal: <span id="cross-modal-sim" style="color:var(--green-glow)">0.000</span>
+        </div>
+      </div>
+
+      <!-- CSI Heatmap -->
+      <div class="panel">
+        <div class="panel-title">&#9670; CSI Amplitude Heatmap</div>
+        <div class="csi-canvas-wrapper">
+          <canvas id="csi-canvas" width="320" height="100"></canvas>
+        </div>
+      </div>
+
+      <!-- RSSI Signal Strength -->
+      <div class="panel">
+        <div class="panel-title">&#9670; RSSI Signal Strength</div>
+        <div class="rssi-row">
+          <div class="rssi-gauge">
+            <div class="rssi-bar-track">
+              <div class="rssi-bar-fill" id="rssi-bar" style="width:0%"></div>
+            </div>
+            <div class="rssi-values">
+              <span class="rssi-dbm" id="rssi-value">-- dBm</span>
+              <span class="rssi-quality" id="rssi-quality">--</span>
+            </div>
+          </div>
+          <canvas id="rssi-sparkline" width="160" height="32"></canvas>
+        </div>
+      </div>
+
+      <!-- Embedding Space -->
+      <div class="panel">
+        <div class="panel-title">&#9670; Embedding Space (2D Projection)</div>
+        <div class="embedding-canvas-wrapper">
+          <canvas id="embedding-canvas" width="320" height="100"></canvas>
+        </div>
+      </div>
+
+      <!-- RuVector Attention Pipeline -->
+      <div class="panel">
+        <div class="panel-title">&#9670; RuVector WASM Attention Pipeline</div>
+        <div class="rv-pipeline">
+          <div class="rv-stage" id="rv-flash">Flash</div>
+          <div class="rv-arrow">&rarr;</div>
+          <div class="rv-stage" id="rv-mha">MHA</div>
+          <div class="rv-arrow">&rarr;</div>
+          <div class="rv-stage" id="rv-hyp">Hyper</div>
+          <div class="rv-arrow">&rarr;</div>
+          <div class="rv-stage" id="rv-lin">Linear</div>
+          <div class="rv-arrow">&rarr;</div>
+          <div class="rv-stage" id="rv-moe">MoE</div>
+          <div class="rv-arrow">&rarr;</div>
+          <div class="rv-stage" id="rv-lg">L+G</div>
+        </div>
+        <div class="rv-stats">
+          <span>Energy: <span id="rv-energy" style="color:var(--green-glow)">--</span></span>
+          <span>Refinement: <span id="rv-refine" style="color:var(--cyan)">--</span></span>
+          <span>Pose Impact: <span id="rv-impact" style="color:var(--amber)">--</span></span>
+        </div>
+      </div>
+
+      <!-- Latency -->
+      <div class="panel">
+        <div class="panel-title">&#9670; Pipeline Latency</div>
+        <div class="latency-grid">
+          <div class="latency-item">
+            <div class="latency-value" id="lat-video">--</div>
+            <div class="latency-label">Video CNN</div>
+          </div>
+          <div class="latency-item">
+            <div class="latency-value" id="lat-csi">--</div>
+            <div class="latency-label">CSI CNN</div>
+          </div>
+          <div class="latency-item">
+            <div class="latency-value" id="lat-fusion">--</div>
+            <div class="latency-label">Fusion</div>
+          </div>
+          <div class="latency-item">
+            <div class="latency-value" id="lat-total">--</div>
+            <div class="latency-label">Total</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="panel">
+        <div class="panel-title">&#9670; Controls</div>
+        <div class="controls-row">
+          <button class="btn" id="pause-btn">⏸ Pause</button>
+        </div>
+
+        <div class="slider-row">
+          <label>Confidence</label>
+          <input type="range" id="confidence-slider" min="0" max="1" step="0.05" value="0.3">
+          <span class="slider-val" id="confidence-value">0.30</span>
+        </div>
+
+        <div style="margin-top:10px">
+          <div class="panel-title" style="margin-bottom:6px">&#9670; Live CSI Source</div>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="ws-url" placeholder="ws://localhost:3030/ws/csi"
+              style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--bg-panel-border);
+                     color:var(--text-primary);padding:5px 8px;border-radius:4px;font-size:11px;
+                     font-family:'JetBrains Mono',monospace">
+            <button class="btn" id="connect-ws-btn">Connect</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /side-panels -->
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+      <div>
+        WeView &middot; Dual-Modal Pose Estimation &middot;
+        Architecture: Conv2D &rarr; RuVector 6-Stage Attention (Flash+MHA+Hyperbolic+Linear+MoE+L/G) &rarr; Fusion &rarr; 26-Keypoint Pose
+      </div>
+      <div>
+        <a href="https://github.com/ruvnet/WeView">GitHub</a> &middot;
+        CNN: <span id="cnn-backend">ruvector-cnn (loading…)</span> &middot;
+        <a href="observatory.html">Observatory</a>
+      </div>
+    </div>
+
+  </div><!-- /main-grid -->
+
+  <script type="module" src="pose-fusion/js/main.js?v=13"></script>
+</body>
+</html>

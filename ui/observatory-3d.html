@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeView Observatory 3D — Realistic DensePose Sensing</title>
+  <meta name="description" content="WeView Observatory 3D: Realistic WiFi DensePose sensing with hybrid CV fusion, photorealistic room and anatomical human figure rendering.">
+  <link rel="stylesheet" href="observatory/css/observatory-3d.css">
+</head>
+<body>
+  <canvas id="observatory-canvas"></canvas>
+
+  <!-- ======= CV Hybrid Video Inset ======= -->
+  <div id="cv-inset" class="cv-inset">
+    <div class="cv-inset-header">
+      <span class="cv-inset-title">CV FEED</span>
+      <div class="cv-mode-selector">
+        <button class="cv-mode-btn active" data-mode="hybrid" id="cv-mode-hybrid">HYBRID</button>
+        <button class="cv-mode-btn" data-mode="cv-only" id="cv-mode-cv">CV</button>
+        <button class="cv-mode-btn" data-mode="wifi-only" id="cv-mode-wifi">WiFi</button>
+      </div>
+      <button id="cv-toggle-btn" class="cv-toggle-btn" title="Toggle CV Panel">▼</button>
+    </div>
+    <div class="cv-inset-body" id="cv-inset-body">
+      <video id="webcam" autoplay playsinline muted></video>
+      <canvas id="cv-skeleton-canvas"></canvas>
+      <div id="cv-no-camera" class="cv-no-camera">
+        <button id="cv-start-camera" class="cv-start-btn">Enable Camera</button>
+        <span class="cv-hint">or use WiFi-only mode</span>
+      </div>
+      <div class="cv-fusion-bar">
+        <div class="fusion-item">
+          <span class="fusion-label">Video</span>
+          <div class="fusion-track"><div class="fusion-fill fusion-fill--video" id="fusion-video-bar"></div></div>
+          <span class="fusion-val" id="fusion-video-val">0%</span>
+        </div>
+        <div class="fusion-item">
+          <span class="fusion-label">WiFi</span>
+          <div class="fusion-track"><div class="fusion-fill fusion-fill--wifi" id="fusion-wifi-bar"></div></div>
+          <span class="fusion-val" id="fusion-wifi-val">0%</span>
+        </div>
+        <div class="fusion-item">
+          <span class="fusion-label">Fused</span>
+          <div class="fusion-track"><div class="fusion-fill fusion-fill--fused" id="fusion-fused-bar"></div></div>
+          <span class="fusion-val" id="fusion-fused-val">0%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= HUD Overlay ======= -->
+  <div id="hud">
+
+    <!-- Top-left: Branding -->
+    <div id="brand">
+      <div id="brand-logo"><span class="pi">&pi;</span> WeView</div>
+      <div id="brand-tagline">Observatory 3D — Realistic DensePose</div>
+    </div>
+
+    <!-- Top-right: Connection + status -->
+    <div id="status-bar">
+      <div id="data-source-badge">
+        <span class="dot dot--demo"></span>
+        <span id="data-source-label">DEMO</span>
+      </div>
+      <div id="render-mode-badge">
+        <span id="render-mode-label">REALISTIC</span>
+      </div>
+      <div id="scenario-area">
+        <span id="autoplay-icon" title="Auto-cycling">&#9654;</span>
+        <select id="scenario-quick-select" title="Change scenario">
+          <option value="auto">Auto-Cycle</option>
+          <option value="empty_room">Empty Room</option>
+          <option value="single_breathing">Vital Signs</option>
+          <option value="two_walking">Multi-Person</option>
+          <option value="fall_event">Fall Detect</option>
+          <option value="sleep_monitoring">Sleep Monitor</option>
+          <option value="intrusion_detect">Intrusion</option>
+          <option value="gesture_control">Gesture Ctrl</option>
+          <option value="crowd_occupancy">Crowd (4 ppl)</option>
+          <option value="search_rescue">Search Rescue</option>
+          <option value="elderly_care">Elderly Care</option>
+          <option value="fitness_tracking">Fitness</option>
+          <option value="security_patrol">Security Patrol</option>
+        </select>
+      </div>
+      <div id="scenario-description"></div>
+      <div id="fps-counter" style="display:none">60 FPS</div>
+      <button id="settings-btn" title="Settings">&#9881;</button>
+    </div>
+
+    <!-- Left panel: Vital Signs -->
+    <div id="panel-vitals" class="data-panel">
+      <div class="panel-header">Vital Signs</div>
+      <div class="vital-row">
+        <div class="vital-icon">&#9825;</div>
+        <div class="vital-data">
+          <div class="vital-label">Heart Rate</div>
+          <div class="vital-value"><span id="hr-value">--</span> <span class="vital-unit">BPM</span></div>
+          <div class="vital-bar"><div id="hr-bar" class="vital-bar-fill vital-bar--hr"></div></div>
+        </div>
+      </div>
+      <div class="vital-row">
+        <div class="vital-icon">&#9788;</div>
+        <div class="vital-data">
+          <div class="vital-label">Respiration</div>
+          <div class="vital-value"><span id="br-value">--</span> <span class="vital-unit">RPM</span></div>
+          <div class="vital-bar"><div id="br-bar" class="vital-bar-fill vital-bar--br"></div></div>
+        </div>
+      </div>
+      <div class="vital-row">
+        <div class="vital-icon">&#9878;</div>
+        <div class="vital-data">
+          <div class="vital-label">Confidence</div>
+          <div class="vital-value"><span id="conf-value">--</span><span class="vital-unit">%</span></div>
+          <div class="vital-bar"><div id="conf-bar" class="vital-bar-fill vital-bar--conf"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel: Signal & Presence -->
+    <div id="panel-signal" class="data-panel">
+      <div class="panel-header">WiFi Signal</div>
+      <div class="signal-row">
+        <span class="signal-label">RSSI</span>
+        <span class="signal-value" id="rssi-value">-- dBm</span>
+      </div>
+      <div class="signal-row">
+        <span class="signal-label">Variance</span>
+        <span class="signal-value" id="var-value">--</span>
+      </div>
+      <div class="signal-row">
+        <span class="signal-label">Motion</span>
+        <span class="signal-value" id="motion-value">--</span>
+      </div>
+      <div class="signal-row">
+        <span class="signal-label">Persons</span>
+        <span class="signal-value" id="persons-value">0</span>
+        <span id="persons-dots" class="persons-dots"></span>
+      </div>
+      <canvas id="rssi-sparkline" width="200" height="48"></canvas>
+
+      <div class="panel-header" style="margin-top:12px">Presence</div>
+      <div id="presence-indicator" class="presence-state presence--absent">
+        <span id="presence-label">ABSENT</span>
+      </div>
+      <div id="fall-alert" class="fall-alert" style="display:none">FALL DETECTED</div>
+    </div>
+
+    <!-- DensePose Body Map Panel -->
+    <div id="panel-densepose" class="data-panel densepose-panel">
+      <div class="panel-header">DensePose UV Map</div>
+      <canvas id="densepose-canvas" width="160" height="220"></canvas>
+      <div class="densepose-legend">
+        <div class="dp-leg-item"><span class="dp-swatch" style="--dp-color:#ff4444"></span>Torso</div>
+        <div class="dp-leg-item"><span class="dp-swatch" style="--dp-color:#44aaff"></span>Arms</div>
+        <div class="dp-leg-item"><span class="dp-swatch" style="--dp-color:#44ff88"></span>Legs</div>
+        <div class="dp-leg-item"><span class="dp-swatch" style="--dp-color:#ffaa44"></span>Head</div>
+      </div>
+    </div>
+
+    <!-- Edge module badges -->
+    <div id="edge-modules-bar"></div>
+
+    <!-- Bottom bar: capabilities -->
+    <div id="capabilities-bar">
+      <div class="cap-item"><span class="cap-icon">&#9898;</span><span>3D Body Mesh</span></div>
+      <div class="cap-divider"></div>
+      <div class="cap-item"><span class="cap-icon">&#9829;</span><span>DensePose UV</span></div>
+      <div class="cap-divider"></div>
+      <div class="cap-item"><span class="cap-icon">&#9784;</span><span>CV+WiFi Hybrid</span></div>
+    </div>
+
+    <!-- Bottom-right: keyboard hints -->
+    <div id="key-hints">
+      <span class="key-hint">[A] Orbit</span>
+      <span class="key-hint">[D] Scenario</span>
+      <span class="key-hint">[R] Render Mode</span>
+      <span class="key-hint">[V] CV Panel</span>
+      <span class="key-hint">[Space] Pause</span>
+    </div>
+  </div>
+
+  <!-- ======= Settings Dialog ======= -->
+  <div id="settings-overlay" class="settings-overlay" style="display:none">
+    <div class="settings-dialog">
+      <div class="settings-header">
+        <span>Settings</span>
+        <button id="settings-close">&times;</button>
+      </div>
+
+      <div class="settings-tabs">
+        <button class="stab active" data-stab="rendering">Rendering</button>
+        <button class="stab" data-stab="figure">Figure</button>
+        <button class="stab" data-stab="scene">Scene</button>
+        <button class="stab" data-stab="data">Data</button>
+      </div>
+
+      <!-- Rendering tab -->
+      <div class="stab-content active" id="stab-rendering">
+        <label class="setting-row">
+          <span>Bloom Strength</span>
+          <input type="range" id="opt-bloom" min="0" max="3" step="0.1" value="0.08">
+          <span class="range-val" id="opt-bloom-val">0.08</span>
+        </label>
+        <label class="setting-row">
+          <span>Exposure</span>
+          <input type="range" id="opt-exposure" min="0.3" max="2" step="0.05" value="1.3">
+          <span class="range-val" id="opt-exposure-val">1.3</span>
+        </label>
+        <label class="setting-row">
+          <span>Vignette</span>
+          <input type="range" id="opt-vignette" min="0" max="1" step="0.05" value="0.25">
+          <span class="range-val" id="opt-vignette-val">0.25</span>
+        </label>
+        <label class="setting-row">
+          <span>SSAO Intensity</span>
+          <input type="range" id="opt-ssao" min="0" max="1" step="0.05" value="0.3">
+          <span class="range-val" id="opt-ssao-val">0.3</span>
+        </label>
+      </div>
+
+      <!-- Figure tab -->
+      <div class="stab-content" id="stab-figure">
+        <label class="setting-row">
+          <span>Render Mode</span>
+          <select id="opt-render-mode">
+            <option value="realistic">Realistic Body</option>
+            <option value="densepose">DensePose UV</option>
+            <option value="xray">X-Ray / Wireframe</option>
+            <option value="hybrid">Hybrid Mesh+Wire</option>
+          </select>
+        </label>
+        <label class="setting-row">
+          <span>Body Opacity</span>
+          <input type="range" id="opt-body-opacity" min="0.1" max="1" step="0.05" value="0.95">
+          <span class="range-val" id="opt-body-opacity-val">0.95</span>
+        </label>
+        <label class="setting-row">
+          <span>Skeleton Overlay</span>
+          <input type="range" id="opt-skeleton-overlay" min="0" max="1" step="0.05" value="0.2">
+          <span class="range-val" id="opt-skeleton-overlay-val">0.2</span>
+        </label>
+        <label class="setting-row">
+          <span>Muscle Detail</span>
+          <input type="range" id="opt-muscle-detail" min="0" max="1" step="0.1" value="0.6">
+          <span class="range-val" id="opt-muscle-detail-val">0.6</span>
+        </label>
+        <label class="setting-row check-row">
+          <span>Show DensePose Segments</span>
+          <input type="checkbox" id="opt-densepose-seg" checked>
+        </label>
+        <label class="setting-row check-row">
+          <span>Show Motion Trails</span>
+          <input type="checkbox" id="opt-motion-trails" checked>
+        </label>
+      </div>
+
+      <!-- Scene tab -->
+      <div class="stab-content" id="stab-scene">
+        <label class="setting-row">
+          <span>Room Brightness</span>
+          <input type="range" id="opt-ambient" min="0" max="1" step="0.05" value="0.7">
+          <span class="range-val" id="opt-ambient-val">0.7</span>
+        </label>
+        <label class="setting-row">
+          <span>Floor Reflection</span>
+          <input type="range" id="opt-reflect" min="0" max="1" step="0.05" value="0.3">
+          <span class="range-val" id="opt-reflect-val">0.3</span>
+        </label>
+        <label class="setting-row">
+          <span>FOV</span>
+          <input type="range" id="opt-fov" min="30" max="90" step="1" value="50">
+          <span class="range-val" id="opt-fov-val">50</span>
+        </label>
+        <label class="setting-row check-row">
+          <span>Show WiFi Signal Field</span>
+          <input type="checkbox" id="opt-signal-field" checked>
+        </label>
+        <label class="setting-row check-row">
+          <span>Show Room Boundary</span>
+          <input type="checkbox" id="opt-room" checked>
+        </label>
+      </div>
+
+      <!-- Data tab -->
+      <div class="stab-content" id="stab-data">
+        <label class="setting-row">
+          <span>Scenario</span>
+          <select id="opt-scenario">
+            <option value="auto">Auto-Cycle (30s)</option>
+            <optgroup label="Core Sensing">
+              <option value="empty_room">Empty Room</option>
+              <option value="single_breathing">Vital Signs</option>
+              <option value="two_walking">Multi-Person</option>
+              <option value="fall_event">Fall Detection</option>
+            </optgroup>
+            <optgroup label="Medical / Health">
+              <option value="sleep_monitoring">Sleep Monitoring</option>
+              <option value="elderly_care">Elderly Care</option>
+              <option value="fitness_tracking">Fitness Tracking</option>
+            </optgroup>
+            <optgroup label="Security">
+              <option value="intrusion_detect">Intrusion Detection</option>
+              <option value="security_patrol">Security Patrol</option>
+            </optgroup>
+          </select>
+        </label>
+        <label class="setting-row">
+          <span>Data Source</span>
+          <select id="opt-data-source">
+            <option value="demo" selected>Demo Generator</option>
+            <option value="ws">Live WebSocket</option>
+          </select>
+        </label>
+        <label class="setting-row" id="ws-url-row" style="display:none">
+          <span>WS URL</span>
+          <input type="text" id="opt-ws-url" value="" placeholder="ws://localhost:3000/ws/sensing">
+        </label>
+        <button id="btn-reset-camera" class="settings-btn">Reset Camera</button>
+        <button id="btn-reset-settings" class="settings-btn">Reset to Defaults</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three.js r160 + addons from CDN -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module" src="observatory/js/observatory-3d-main.js"></script>
+</body>
+</html>

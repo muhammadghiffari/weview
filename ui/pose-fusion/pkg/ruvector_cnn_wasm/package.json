@@ -1,0 +1,26 @@
+{
+  "name": "ruvector-cnn-wasm",
+  "type": "module",
+  "description": "WASM bindings for ruvector-cnn - CNN feature extraction for image embeddings",
+  "version": "0.1.0",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ruvnet/ruvector"
+  },
+  "files": [
+    "ruvector_cnn_wasm_bg.wasm",
+    "ruvector_cnn_wasm.js"
+  ],
+  "main": "ruvector_cnn_wasm.js",
+  "sideEffects": [
+    "./snippets/*"
+  ],
+  "keywords": [
+    "cnn",
+    "embeddings",
+    "wasm",
+    "simd",
+    "machine-learning"
+  ]
+}

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeView | Spatial Intelligence Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #030712;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --accent-1: #3b82f6; /* Blue */
+            --accent-2: #8b5cf6; /* Purple */
+            --accent-3: #10b981; /* Emerald */
+            --card-bg: rgba(17, 24, 39, 0.4); /* More transparent for glass effect */
+            --card-border: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Animated Background --- */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 50%, #0a1128 0%, #030712 100%);
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.5;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+
+        .blob-1 {
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(59,130,246,0.3) 0%, transparent 70%);
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            bottom: -20%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%);
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            top: 40%;
+            left: 40%;
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%);
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5%, 5%) scale(1.1); }
+            100% { transform: translate(-5%, 10%) scale(0.9); }
+        }
+
+        /* --- Grid Overlay --- */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: linear-gradient(var(--card-border) 1px, transparent 1px),
+                              linear-gradient(90deg, var(--card-border) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.3;
+            z-index: -1;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+        }
+
+        /* --- Header --- */
+        header {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 5%;
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .pi-logo {
+            height: 36px;
+            width: auto;
+            filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.4));
+        }
+
+        .logo-wordmark {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .logo-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+        
+        .logo-name span {
+            color: var(--accent-1);
+        }
+
+        .logo-by {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.08em;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-link {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            letter-spacing: 0.04em;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            color: rgba(59, 130, 246, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: rgba(59, 130, 246, 0.1);
+            padding: 4px 12px;
+            border-radius: 50px;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            text-align: center;
+            padding: 6rem 5% 4rem;
+            max-width: 900px;
+            margin: 0 auto;
+            z-index: 10;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-accent {
+            background: linear-gradient(to right, var(--accent-1), var(--accent-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-inline: auto;
+        }
+
+        /* --- Cards Section --- */
+        .demos-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 0 5% 6rem;
+            flex-wrap: wrap;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .demo-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 350px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.06), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .demo-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 1.5rem;
+            padding: 1px;
+            background: radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.3), transparent 40%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: transparent; /* Hide static border, show dynamic glow */
+        }
+
+        .demo-card:hover::before,
+        .demo-card:hover::after {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-1 .card-icon {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .card-2 .card-icon {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-2);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+
+        .card-3 .card-icon {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-3);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .demo-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .demo-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+            flex-grow: 1;
+            line-height: 1.6;
+        }
+
+        .tech-stack {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tech-badge {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+            transition: gap 0.3s ease;
+        }
+        
+        .card-1 .card-footer { color: var(--accent-1); }
+        .card-2 .card-footer { color: var(--accent-2); }
+        .card-3 .card-footer { color: var(--accent-3); }
+        .card-4 .card-footer { color: #f59e0b; }
+
+        .card-4 .card-icon {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+        }
+
+        .demo-card:hover .card-footer {
+            gap: 0.75rem;
+        }
+
+        .arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .demo-card:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* --- Footer --- */
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--card-border);
+            z-index: 10;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .demos-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .demo-card {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Background Elements -->
+    <div class="bg-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <header>
+        <a href="index.html" class="logo">
+            <img src="assets/WeView_Logo.png" alt="Pi" class="pi-logo" onerror="this.style.display='none';">
+            <div class="logo-wordmark">
+                <span class="logo-name">We<span>View</span></span>
+                <span class="logo-by">Spatial Intelligence</span>
+            </div>
+        </a>
+        <div class="nav-right">
+            <a class="nav-link" href="https://github.com" target="_blank">GitHub</a>
+            <span class="badge">Live Demo</span>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1 class="text-gradient">Experience <br><span class="text-gradient-accent">Spatial Intelligence</span></h1>
+            <p>Explore our interactive demonstrations showcasing human pose estimation, vital sign monitoring, and spatial reasoning directly in your browser.</p>
+        </section>
+
+        <section class="demos-container">
+            <!-- NVSim -->
+            <a href="nvsim/index.html" class="demo-card card-4">
+                <div class="card-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+                </div>
+                <h3>NVSim Magnetometer</h3>
+                <p>Vite + Lit dashboard for the NV-diamond magnetometer simulator, featuring dual-modal camera pose fusion.</p>
+                <div class="tech-stack">
+                    <span class="tech-badge">Vite</span>
+                    <span class="tech-badge">Lit</span>
+                    <span class="tech-badge">TypeScript</span>
+                </div>
+                <div class="card-footer">
+                    Launch Demo <span class="arrow">&rarr;</span>
+                </div>
+            </a>
+
+             <!-- Pose Fusion -->
+            <a href="pose-fusion.html" class="demo-card card-2">
+                <div class="card-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+                </div>
+                <h3>Pose Fusion</h3>
+                <p>Dual-modal computer vision demonstration. Utilizes MediaPipe WebAssembly to perform real-time optical pose tracking and keypoint extraction directly from your webcam.</p>
+                <div class="tech-stack">
+                    <span class="tech-badge">WASM</span>
+                    <span class="tech-badge">MediaPipe</span>
+                    <span class="tech-badge">Canvas API</span>
+                </div>
+                <div class="card-footer">
+                    Launch Demo <span class="arrow">&rarr;</span>
+                </div>
+            </a>
+            
+            <!-- Observatory 3D -->
+            <a href="observatory-3d.html" class="demo-card card-1">
+                <div class="card-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                </div>
+                <h3>Observatory 3D</h3>
+                <p>Fully interactive 3D environment rendering human body meshes. Features Realistic, DensePose, and X-Ray rendering modes with real-time HUD integration.</p>
+                <div class="tech-stack">
+                    <span class="tech-badge">WebGL</span>
+                    <span class="tech-badge">Three.js</span>
+                    <span class="tech-badge">WebSockets</span>
+                </div>
+                <div class="card-footer">
+                    Launch Demo <span class="arrow">&rarr;</span>
+                </div>
+            </a>
+
+            <!-- Observatory 2D -->
+            <a href="observatory.html" class="demo-card card-3">
+                <div class="card-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                </div>
+                <h3>Observatory 2D</h3>
+                <p>Classic top-down floor plan visualization. Provides a lightweight, high-performance view of occupancy heatmaps, tracking paths, and signal telemetry.</p>
+                <div class="tech-stack">
+                    <span class="tech-badge">Vanilla JS</span>
+                    <span class="tech-badge">Rust Backend</span>
+                </div>
+                <div class="card-footer">
+                    Launch Demo <span class="arrow">&rarr;</span>
+                </div>
+            </a>
+
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 WeView. All rights reserved. Built for Economic Survival 2026.</p>
+    </footer>
+
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", (event) => {
+            const tl = gsap.timeline();
+
+            // Animate Header
+            tl.from("header", {
+                y: -50,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            });
+
+            // Floating animation for the Pi Logo
+            gsap.to(".pi-logo", {
+                y: -5,
+                duration: 2,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+
+            // Animate Hero Section
+            tl.from(".hero h1", {
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            }, "-=0.4");
+            
+            tl.from(".hero p", {
+                y: 20,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            }, "-=0.6");
+
+            // Stagger Animate Cards
+            // clearProps ensures GSAP removes all inline styles after animation
+            // so cards don't get stuck invisible
+            gsap.set(".demo-card", { opacity: 1, y: 0 }); // ensure visible first
+            tl.fromTo(".demo-card",
+                { y: 50, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.8,
+                    stagger: 0.15,
+                    ease: "back.out(1.2)",
+                    clearProps: "all"  // clean up inline styles after done
+                },
+            "-=0.4");
+
+            // Interactive hover for cards using GSAP
+            const cards = document.querySelectorAll(".demo-card");
+            
+            // Mouse tracking spotlight inside cards
+            document.querySelector('.demos-container').onmousemove = e => {
+                for(const card of cards) {
+                    const rect = card.getBoundingClientRect(),
+                          x = e.clientX - rect.left,
+                          y = e.clientY - rect.top;
+                    
+                    card.style.setProperty("--mouse-x", `${x}px`);
+                    card.style.setProperty("--mouse-y", `${y}px`);
+                }
+            };
+
+            cards.forEach(card => {
+                card.addEventListener("mouseenter", () => {
+                    gsap.to(card, { scale: 1.03, y: -5, boxShadow: "0 20px 40px rgba(0,0,0,0.4)", duration: 0.3, ease: "power2.out" });
+                    gsap.to(card.querySelector(".card-icon"), { scale: 1.1, rotation: 5, duration: 0.3, ease: "back.out(2)" });
+                    gsap.to(card.querySelector(".arrow"), { x: 5, duration: 0.3 });
+                });
+                card.addEventListener("mouseleave", () => {
+                    gsap.to(card, { scale: 1, y: 0, boxShadow: "none", duration: 0.3, ease: "power2.out" });
+                    gsap.to(card.querySelector(".card-icon"), { scale: 1, rotation: 0, duration: 0.3, ease: "power2.out" });
+                    gsap.to(card.querySelector(".arrow"), { x: 0, duration: 0.3 });
+                });
+            });
+
+            // Mouse Parallax for Background Blobs
+            const blobs = document.querySelectorAll(".blob");
+            window.addEventListener("mousemove", (e) => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 2;
+                const y = (e.clientY / window.innerHeight - 0.5) * 2;
+                
+                gsap.to(blobs[0], { x: x * 30, y: y * 30, duration: 1, ease: "power1.out" });
+                gsap.to(blobs[1], { x: x * -40, y: y * -40, duration: 1.2, ease: "power1.out" });
+                gsap.to(blobs[2], { x: x * 20, y: y * -20, duration: 1.5, ease: "power1.out" });
+            });
+
+            // Magnetic Badge Effect
+            const badge = document.querySelector(".badge");
+            badge.addEventListener("mousemove", (e) => {
+                const rect = badge.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                gsap.to(badge, { x: x * 0.3, y: y * 0.3, duration: 0.3, ease: "power2.out" });
+            });
+            badge.addEventListener("mouseleave", () => {
+                gsap.to(badge, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.3)" });
+            });
+        });
+    </script>
+</body>
+</html>
