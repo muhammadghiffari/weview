@@ -3939,7 +3939,7 @@ dependencies = [
  "serde-wasm-bindgen",
  "serde_json",
  "sha2",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "tracing",
  "wasm-bindgen",
 ]
@@ -3954,7 +3954,7 @@ dependencies = [
  "nvsim",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "tokio",
  "tower 0.4.13",
  "tower-http 0.5.2",
@@ -8329,7 +8329,7 @@ dependencies = [
  "serde_json",
  "tabled",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -8353,7 +8353,7 @@ dependencies = [
  "proptest",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "uuid",
 ]
 
@@ -8383,7 +8383,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-dialog",
  "tauri-plugin-shell",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "tokio",
  "tokio-serial",
  "tracing",
@@ -8417,7 +8417,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "tokio",
  "tracing",
 ]
@@ -8443,7 +8443,7 @@ dependencies = [
  "ruvector-temporal-tensor",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "tokio",
  "tokio-test",
  "tracing",
@@ -8471,7 +8471,7 @@ dependencies = [
  "serde_json",
  "tch",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "tokio",
  "tracing",
 ]
@@ -8509,7 +8509,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
 ]
 
 [[package]]
@@ -8552,7 +8552,7 @@ dependencies = [
  "ruvector-solver",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "wifi-densepose-core",
  "wifi-densepose-ruvector",
 ]
@@ -8585,7 +8585,7 @@ dependencies = [
  "sha2",
  "tch",
  "tempfile",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "tokio",
  "toml 0.8.2",
  "tracing",
