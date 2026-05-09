@@ -86,7 +86,7 @@ web-sys = { version = "0.3", features = ["console", "Window", "WebSocket"] }
 getrandom = { version = "0.2", features = ["js"] }
 
 # Hardware
-serialport = "4.3"
+serialport = "4.9"
 pcap = "1.1"
 
 # Graph algorithms (for min-cut assignment in metrics)
