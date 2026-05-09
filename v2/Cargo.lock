@@ -5751,9 +5751,9 @@ dependencies = [
 
 [[package]]
 name = "ruvector-attention"
-version = "2.0.4"
+version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb4233c1cecd0ea826d95b787065b398489328885042247ff5ffcbb774e864ff"
+checksum = "a92e8e456458188d04aee946579aa7cf96d7b8f276cbf6094532b2c3f6d8cc0b"
 dependencies = [
  "rand 0.8.5",
  "rayon",
@@ -8498,7 +8498,7 @@ version = "0.3.0"
 dependencies = [
  "approx 0.5.1",
  "criterion",
- "ruvector-attention 2.0.4",
+ "ruvector-attention 2.1.0",
  "ruvector-attn-mincut",
  "ruvector-core",
  "ruvector-crv",
@@ -8546,7 +8546,7 @@ dependencies = [
  "num-traits",
  "proptest",
  "rustfft",
- "ruvector-attention 2.0.4",
+ "ruvector-attention 2.1.0",
  "ruvector-attn-mincut",
  "ruvector-mincut",
  "ruvector-solver",
@@ -8575,7 +8575,7 @@ dependencies = [
  "num-traits",
  "petgraph",
  "proptest",
- "ruvector-attention 2.0.4",
+ "ruvector-attention 2.1.0",
  "ruvector-attn-mincut",
  "ruvector-mincut",
  "ruvector-solver",
