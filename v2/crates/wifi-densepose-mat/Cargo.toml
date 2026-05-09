@@ -31,7 +31,7 @@ ruvector-solver = { workspace = true, optional = true }
 ruvector-temporal-tensor = { workspace = true, optional = true }
 
 # Async runtime
-tokio = { version = "1.35", features = ["rt", "sync", "time"] }
+tokio = { version = "1.50", features = ["rt", "sync", "time"] }
 async-trait = "0.1"
 
 # Web framework (REST API)
