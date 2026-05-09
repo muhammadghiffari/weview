@@ -51,7 +51,7 @@ chrono = { version = "0.4", features = ["serde"] }
 
 # Math and signal processing
 num-complex = "0.4"
-ndarray = "0.15"
+ndarray = "0.17"
 rustfft = "6.1"
 
 # Utilities
