@@ -86,14 +86,16 @@ pub fn occupancy_or_fallback(
 /// Only acts when the model status is `Collecting`. Wraps the latest frame
 /// as a single-link observation (n_links=1) and feeds it.
 pub fn maybe_feed_calibration(field: &mut FieldModel, frame_history: &VecDeque<Vec<f64>>) {
-    if field.status() != CalibrationStatus::Collecting {
+    if field.status() != CalibrationStatus::Collecting && field.status() != CalibrationStatus::Uncalibrated {
         return;
     }
     if let Some(latest) = frame_history.back() {
+        // Truncate to 56 subcarriers to match FieldModel default config, avoiding DimensionMismatch
+        let truncated: Vec<f64> = latest.iter().take(56).copied().collect();
         // Single-link observation: [1][n_subcarriers]
-        let observations = vec![latest.clone()];
+        let observations = vec![truncated];
         if let Err(e) = field.feed_calibration(&observations) {
-            tracing::debug!("FieldModel calibration feed: {e}");
+            tracing::warn!("FieldModel calibration feed error: {e}");
         }
     }
 }

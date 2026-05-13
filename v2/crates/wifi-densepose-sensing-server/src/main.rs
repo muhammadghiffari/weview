@@ -3683,6 +3683,7 @@ async fn udp_receiver_task(state: SharedState, udp_port: u16) {
     loop {
         match socket.recv_from(&mut buf).await {
             Ok((len, src)) => {
+                info!("📦 UDP RECV: {} bytes from {}", len, src);
                 // ADR-039: Try edge vitals packet first (magic 0xC511_0002).
                 if let Some(vitals) = parse_esp32_vitals(&buf[..len]) {
                     debug!("ESP32 vitals from {src}: node={} br={:.1} hr={:.1} pres={}",
@@ -3895,7 +3896,7 @@ async fn udp_receiver_task(state: SharedState, udp_port: u16) {
                 }
 
                 if let Some(frame) = parse_esp32_frame(&buf[..len]) {
-                    debug!("ESP32 frame from {src}: node={}, subs={}, seq={}",
+                    info!("✅ RAW CSI from {src}: node={}, subs={}, seq={}",
                            frame.node_id, frame.n_subcarriers, frame.sequence);
 
                     let mut s = state.write().await;
@@ -4032,6 +4033,7 @@ async fn udp_receiver_task(state: SharedState, udp_port: u16) {
                     // Feed field model calibration if active (use per-node history for ESP32).
                     if let Some(frame_history) = s.node_states.get(&node_id).map(|ns| ns.frame_history.clone()) {
                         if let Some(ref mut fm) = s.field_model {
+                            info!("🔬 CALIBRATION FEED: status={:?}, frames={}", fm.status(), fm.calibration_frame_count());
                             field_bridge::maybe_feed_calibration(fm, &frame_history);
                         }
                     }

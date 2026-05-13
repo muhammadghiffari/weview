@@ -9,10 +9,10 @@ description = "WiFi-based human pose estimation using CSI data and DensePose neu
 readme = "README.md"
 license = "MIT"
 authors = [
-    {name = "rUv", email = "ruv@ruv.net"}
+    {name = "We", email = "we@weview.net"}
 ]
 maintainers = [
-    {name = "rUv", email = "ruv@ruv.net"}
+    {name = "We", email = "we@weview.net"}
 ]
 keywords = [
     "wifi",
@@ -167,11 +167,11 @@ deployment = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ruvnet/wifi-densepose"
-Documentation = "https://github.com/ruvnet/wifi-densepose#readme"
-Repository = "https://github.com/ruvnet/wifi-densepose.git"
-"Bug Tracker" = "https://github.com/ruvnet/wifi-densepose/issues"
-Changelog = "https://github.com/ruvnet/wifi-densepose/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/weview/wifi-densepose"
+Documentation = "https://github.com/weview/wifi-densepose#readme"
+Repository = "https://github.com/weview/wifi-densepose.git"
+"Bug Tracker" = "https://github.com/weview/wifi-densepose/issues"
+Changelog = "https://github.com/weview/wifi-densepose/blob/main/CHANGELOG.md"
 
 [project.scripts]
 wifi-densepose = "src.cli:cli"

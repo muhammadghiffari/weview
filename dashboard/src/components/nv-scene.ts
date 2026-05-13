@@ -11,10 +11,10 @@ export class NvScene extends LitElement {
   @state() private zoom = 1.0;
   @state() private layerVisible = { source: true, field: true, label: true };
   @state() private items: SceneItem[] = [
-    { id: 'rebar', x: 740, y: 240, color: 'oklch(0.72 0.18 330)', name: 'rebar.steel' },
-    { id: 'heart', x: 220, y: 180, color: 'oklch(0.78 0.14 195)', name: 'heart_proxy' },
-    { id: 'mains', x: 180, y: 380, color: 'oklch(0.72 0.18 330)', name: 'mains_60Hz' },
-    { id: 'door', x: 800, y: 470, color: 'oklch(0.78 0.14 145)', name: 'door.steel' },
+    { id: 'node1', x: 220, y: 150, color: 'oklch(0.65 0.20 150)', name: 'ESP32 Node 1 (Tx)' },
+    { id: 'node2', x: 780, y: 150, color: 'oklch(0.72 0.18 330)', name: 'ESP32 Node 2 (Rx)' },
+    { id: 'node3', x: 500, y: 500, color: 'oklch(0.72 0.18 330)', name: 'ESP32 Node 3 (Rx)' },
+    { id: 'target', x: 500, y: 250, color: 'oklch(0.78 0.14 195)', name: 'Human Target' },
   ];
   @state() private dragging: string | null = null;
   @state() private selected: string | null = null;
@@ -304,12 +304,16 @@ export class NvScene extends LitElement {
             stroke=${it.color} stroke-width="1" stroke-opacity="0.5"/>
         `) : ''}
 
-        <!-- Source primitives -->
+        <!-- Source primitives / Nodes -->
         ${this.layerVisible.source ? this.items.map((it) => svg`
           <g class=${`draggable ${this.dragging === it.id ? 'dragging' : ''} ${this.selected === it.id ? 'selected' : ''}`}
              data-id=${it.id} data-source-id=${it.id}
              transform=${`translate(${it.x.toFixed(0)},${it.y.toFixed(0)})`}
              @pointerdown=${(e: PointerEvent) => this.onDown(it.id, e)}>
+             
+            <!-- Detection Range Indicator (Jangkauan) -->
+            ${it.id.includes('node') ? svg`<circle cx="0" cy="0" r="180" fill=${it.color} fill-opacity="0.04" stroke=${it.color} stroke-width="1" stroke-dasharray="8 8" />` : ''}
+            
             <ellipse cx="0" cy="0" rx="32" ry="22" fill=${it.color} fill-opacity="0.18"
               stroke=${it.color} stroke-width="1.2"/>
             <circle cx="0" cy="0" r="4" fill=${it.color}/>

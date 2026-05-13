@@ -10,10 +10,10 @@
 ## GANTI WIFI? Edit 4 baris ini lalu jalankan seluruh script
 ## ============================================================
 
-$SSID = "G.439 Dormitory"         # ← WiFi SSID
-$PASS = "@G439.25"                # ← WiFi Password
-$IP   = "10.9.8.178"              # ← PC IP (cek: ipconfig | sls IPv4)
-$CH   = 153                       # ← Channel (cek: netsh wlan show interfaces | sls Channel)
+$SSID = "WeView-Net"            # ← WiFi SSID
+$PASS = "weviewadmin"           # ← WiFi Password
+$IP   = "192.168.137.1"         # ← PC IP (cek: ipconfig | sls IPv4)
+$CH   = 6                       # ← Channel (cek: netsh wlan show interfaces | sls Channel)
 
 ## ============================================================
 ## JANGAN EDIT DI BAWAH INI

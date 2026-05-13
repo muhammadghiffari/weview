@@ -9,6 +9,9 @@
 </p>
 
 <p align="center">
+  <a href="https://weview-kappa.vercel.app/">
+    <img src="https://img.shields.io/badge/🔴_Live_Demo-weview--kappa.vercel.app-FF0000?style=for-the-badge" alt="Live Demo">
+  </a>
   <a href="https://deepwiki.com/muhammadghiffari/weview/9.1-research-papers-and-surveys">
     <img src="https://img.shields.io/badge/DeepWiki-Research%20Papers-0052cc.svg?style=for-the-badge&logo=bookStack&logoColor=white" alt="DeepWiki Research Papers">
   </a>
@@ -47,7 +50,7 @@ The WeView project utilizes DDD to manage the high complexity of multi-modal sen
 | **Hardware Platform** | Generic | ESP32 CSI ingestion, radio abstraction, and frame parsing. |
 | **Signal Processing** | Core | Phase sanitization, BVP extraction, and Fresnel zone analysis. |
 | **Sensing Server** | Core | Orchestration of real-time data flows, model management, and SONA. |
-| **RuvSense / RuVector** | Core | Viewpoint attention, CRV signal lines, and multistatic bridge. |
+| **WeSense / WeVector** | Core | Viewpoint attention, CRV signal lines, and multistatic bridge. |
 | **WiFi-Mat** | Supporting | Disaster response, survivor triage (START), and Kalman tracking. |
 | **Training Pipeline** | Supporting | Dataset loading, virtual augmentation, and rapid adaptation. |
 | **CHCI (Claude Flow)** | Supporting | AI agent orchestration, swarm topology, and self-learning hooks. |
@@ -109,7 +112,7 @@ For headless testing via QEMU:
 ```
 
 ### 4. The Verification Pipeline (`./verify`)
-To ensure the integrity of the sensing proofs and the RuVector witness chain:
+To ensure the integrity of the sensing proofs and the WeVector witness chain:
 ```bash
 ./verify --pipeline all --proof-path ./proofs/latest.json
 ```
